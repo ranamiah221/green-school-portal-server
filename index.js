@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 8000;
 const app=express();
 require('dotenv').config()
@@ -30,13 +30,38 @@ async function run() {
     const teacherCollection = client.db("greenDB").collection("teachers");
    
     // students collection....
+    app.get('/students', async(req, res)=>{
+        const result = await studentCollection.find().toArray();
+        res.send(result)
+    })
     app.post('/students', async(req, res)=>{
         const student = req.body;
         const result = await studentCollection.insertOne(student)
         res.send(result)
     })
-    app.get('/students', async(req, res)=>{
-        const result = await studentCollection.find().toArray();
+    app.delete('/students/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query={_id : new ObjectId(id)}
+      const result = await studentCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    // find a specific id...
+    app.get('/students/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await studentCollection.findOne(query)
+      res.send(result)
+    })
+
+    // teachers collections....
+    app.get('/teachers', async(req, res)=>{
+        const result = await teacherCollection.find().toArray();
+        res.send(result)
+    })
+    app.post('/teachers', async(req, res)=>{
+        const teacher = req.body;
+        const result = await teacherCollection.insertOne(teacher)
         res.send(result)
     })
 
