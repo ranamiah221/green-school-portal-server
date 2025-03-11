@@ -26,7 +26,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     
-    
+    const studentCollection = client.db("greenDB").collection("students");
+    const teacherCollection = client.db("greenDB").collection("teachers");
+   
+    // students collection....
+    app.post('/students', async(req, res)=>{
+        const student = req.body;
+        const result = await studentCollection.insertOne(student)
+        res.send(result)
+    })
+    app.get('/students', async(req, res)=>{
+        const result = await studentCollection.find().toArray();
+        res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
