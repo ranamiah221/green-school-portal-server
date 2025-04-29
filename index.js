@@ -28,6 +28,8 @@ async function run() {
     
     const studentCollection = client.db("greenDB").collection("students");
     const teacherCollection = client.db("greenDB").collection("teachers");
+    const subjectCollection = client.db("greenDB").collection("subjects");
+    
    
     // students collection....
     app.get('/students', async(req, res)=>{
@@ -64,6 +66,25 @@ async function run() {
         const result = await teacherCollection.insertOne(teacher)
         res.send(result)
     })
+
+
+    // subject releted api..
+    app.get('/subjects', async(req, res)=>{
+        const result = await subjectCollection.find().toArray();
+        res.send(result)
+    })
+    app.post('/subjects', async(req, res)=>{
+      const subject= req.body;
+      const result = await subjectCollection.insertOne(subject)
+      res.send(result)
+    })
+    app.delete('/subjects/:id', async(req, res)=>{
+      const id = req.params.id;
+      const qurey = {_id : new ObjectId(id)}
+      const result = await subjectCollection.deleteOne(qurey)
+      res.send(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
