@@ -29,7 +29,7 @@ async function run() {
     const studentCollection = client.db("greenDB").collection("students");
     const teacherCollection = client.db("greenDB").collection("teachers");
     const subjectCollection = client.db("greenDB").collection("subjects");
-    
+    const questionCollection = client.db("greenDB").collection("questions");
    
     // students collection....
     app.get('/students', async(req, res)=>{
@@ -82,6 +82,20 @@ async function run() {
       const id = req.params.id;
       const qurey = {_id : new ObjectId(id)}
       const result = await subjectCollection.deleteOne(qurey)
+      res.send(result)
+    })
+
+
+
+    // questions api...
+    app.get('/questions', async(req, res)=>{
+      const cursor = await questionCollection.find().toArray();
+      res.send(cursor)
+    })
+
+    app.post('/questions', async(req, res)=>{
+      const question = req.body;
+      const result = await questionCollection.insertOne(question)
       res.send(result)
     })
 
