@@ -30,6 +30,7 @@ async function run() {
     const teacherCollection = client.db("greenDB").collection("teachers");
     const subjectCollection = client.db("greenDB").collection("subjects");
     const questionCollection = client.db("greenDB").collection("questions");
+    const noticeCollection = client.db("greenDB").collection("notices");
    
     // students collection....
     app.get('/students', async(req, res)=>{
@@ -96,6 +97,17 @@ async function run() {
     app.post('/questions', async(req, res)=>{
       const question = req.body;
       const result = await questionCollection.insertOne(question)
+      res.send(result)
+    })
+
+    // notice releted Api...
+    app.get('/notices', async(req, res)=>{
+      const cursor = await noticeCollection.find().toArray()
+      res.send(cursor);
+    })
+    app.post('/notices', async(req, res)=>{
+      const noticeInfo = req.body;
+      const result = await noticeCollection.insertOne(noticeInfo);
       res.send(result)
     })
 
