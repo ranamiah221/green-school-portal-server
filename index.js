@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 8000;
-const app=express();
+const app = express();
 require('dotenv').config()
 
 // middleware
@@ -25,63 +25,88 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+
     const studentCollection = client.db("greenDB").collection("students");
     const teacherCollection = client.db("greenDB").collection("teachers");
     const subjectCollection = client.db("greenDB").collection("subjects");
     const questionCollection = client.db("greenDB").collection("questions");
     const noticeCollection = client.db("greenDB").collection("notices");
-   
-    // students collection....
-    app.get('/students', async(req, res)=>{
-        const result = await studentCollection.find().toArray();
-        res.send(result)
-    })
-    app.post('/students', async(req, res)=>{
-        const student = req.body;
-        const result = await studentCollection.insertOne(student)
-        res.send(result)
-    })
-    app.delete('/students/:id', async(req, res)=>{
-      const id = req.params.id;
-      const query={_id : new ObjectId(id)}
-      const result = await studentCollection.deleteOne(query)
+    const adminUserCollection = client.db("greenDB").collection("adminUsers");
+
+    // Admin
+    app.post('/adminUser', async (req, res) => {
+      const adminInfo = req.body;
+      const result = await adminUserCollection.insertOne(adminInfo)
       res.send(result)
     })
 
-    // find a specific id...
-    app.get('/students/:id', async(req, res)=>{
+    // students collection....
+    app.get('/students', async (req, res) => {
+      const result = await studentCollection.find().toArray();
+      res.send(result)
+    })
+    app.post('/students', async (req, res) => {
+      const student = req.body;
+      const result = await studentCollection.insertOne(student)
+      res.send(result)
+    })
+    app.delete('/students/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
+      const result = await studentCollection.deleteOne(query)
+      res.send(result)
+    })
+    app.get('/students/:phn', async(req, res)=>{
+      const phn = req.params.phn;
+      const query ={phone : phn}
       const result = await studentCollection.findOne(query)
       res.send(result)
     })
 
-    // teachers collections....
-    app.get('/teachers', async(req, res)=>{
-        const result = await teacherCollection.find().toArray();
-        res.send(result)
+    // find a specific id...
+    app.get('/students/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await studentCollection.findOne(query)
+      res.send(result)
     })
-    app.post('/teachers', async(req, res)=>{
-        const teacher = req.body;
-        const result = await teacherCollection.insertOne(teacher)
-        res.send(result)
+
+
+    // teachers collections....
+    app.get('/teachers', async (req, res) => {
+      const result = await teacherCollection.find().toArray();
+      res.send(result)
+    })
+    app.post('/teachers', async (req, res) => {
+      const teacher = req.body;
+      const result = await teacherCollection.insertOne(teacher)
+      res.send(result)
+    })
+
+    app.get('/teachers/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = {
+        teacherEmail: email
+      }
+      const result = await teacherCollection.findOne(query)
+      res.send(result)
+
     })
 
 
     // subject releted api..
-    app.get('/subjects', async(req, res)=>{
-        const result = await subjectCollection.find().toArray();
-        res.send(result)
+    app.get('/subjects', async (req, res) => {
+      const result = await subjectCollection.find().toArray();
+      res.send(result)
     })
-    app.post('/subjects', async(req, res)=>{
-      const subject= req.body;
+    app.post('/subjects', async (req, res) => {
+      const subject = req.body;
       const result = await subjectCollection.insertOne(subject)
       res.send(result)
     })
-    app.delete('/subjects/:id', async(req, res)=>{
+    app.delete('/subjects/:id', async (req, res) => {
       const id = req.params.id;
-      const qurey = {_id : new ObjectId(id)}
+      const qurey = { _id: new ObjectId(id) }
       const result = await subjectCollection.deleteOne(qurey)
       res.send(result)
     })
@@ -89,23 +114,23 @@ async function run() {
 
 
     // questions api...
-    app.get('/questions', async(req, res)=>{
+    app.get('/questions', async (req, res) => {
       const cursor = await questionCollection.find().toArray();
       res.send(cursor)
     })
 
-    app.post('/questions', async(req, res)=>{
+    app.post('/questions', async (req, res) => {
       const question = req.body;
       const result = await questionCollection.insertOne(question)
       res.send(result)
     })
 
     // notice releted Api...
-    app.get('/notices', async(req, res)=>{
+    app.get('/notices', async (req, res) => {
       const cursor = await noticeCollection.find().toArray()
       res.send(cursor);
     })
-    app.post('/notices', async(req, res)=>{
+    app.post('/notices', async (req, res) => {
       const noticeInfo = req.body;
       const result = await noticeCollection.insertOne(noticeInfo);
       res.send(result)
@@ -124,9 +149,9 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req,res)=>{
-    res.send("green school portal server")
+app.get('/', (req, res) => {
+  res.send("green school portal server")
 })
-app.listen(port, ()=>{
-    console.log(`green school portal running on port: ${port}`);
+app.listen(port, () => {
+  console.log(`green school portal running on port: ${port}`);
 })
